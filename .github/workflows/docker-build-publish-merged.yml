@@ -121,6 +121,10 @@ jobs:
           file_glob: false
           asset_name: ${{steps.helm-package.outputs.helm_package}}
 
+      - run: |
+          echo "URL form event: ${{ github.event.base.repo.url }}"
+          echo "URL from github? ${{ github.repository.url }}"
+
       - name: Run Helm Release (Different Repository)
         uses: peter-evans/repository-dispatch@v1
         with:
@@ -129,7 +133,7 @@ jobs:
           event-type: upload-helm
           client-payload: '
             {
-              "repository": "${{steps.docker_build.outputs.repo}}",
+              "repository": "${{ github.event.base.repo.url }}",
               "helm_chart": "${{steps.helm-package.outputs.helm_package}}",
               "chart_url": "https://github.com/${{github.repository}}/releases/download/${{steps.docker_build.outputs.version}}/${{steps.docker_build.outputs.repo}}-${{steps.docker_build.outputs.version}}.tgz",
               "version": "${{steps.docker_build.outputs.version}}"
